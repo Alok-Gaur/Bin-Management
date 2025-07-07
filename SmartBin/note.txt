@@ -1,0 +1,6 @@
+{
+    "token": "4005f42ed599e652c5afcc44b579ffa8c4049e24",
+    "user_id": 1,
+    "user_name": "Alok",
+    "email": "alokgaur200@gmail.com"
+}
