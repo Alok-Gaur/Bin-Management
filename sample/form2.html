@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EcoLoop</title>
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --secondary: #4682B4;
+            --light: #F5F7FA;
+            --dark: #333333;
+            --sidebar: #2C3E50;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--light);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar);
+            color: white;
+            padding: 1.5rem 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar-header p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .user-info h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .user-info p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .stats-card {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0 1.5rem 1rem;
+        }
+        
+        .stats-card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        
+        .stats-card p {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-menu {
+            margin-top: 1.5rem;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-item.active {
+            background-color: var(--primary);
+        }
+        
+        .nav-item i {
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+        }
+        
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title h1 {
+            margin: 0;
+            color: var(--dark);
+        }
+        
+        .page-title p {
+            margin: 0.25rem 0 0;
+            color: var(--dark);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .card-header .badge {
+            background-color: var(--light);
+            color: var(--dark);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .material-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .material-card:last-child {
+            border-bottom: none;
+        }
+        
+        .material-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        .material-info {
+            flex: 1;
+        }
+        
+        .material-info h4 {
+            margin: 0 0 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .material-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+        
+        .material-stats {
+            text-align: right;
+        }
+        
+        .material-stats .match-score {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .material-stats p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+        
+        .circularity-chart {
+            height: 200px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            color: var(--dark);
+            opacity: 0.6;
+        }
+        
+        .full-width-card {
+            grid-column: span 3;
+        }
+        
+        .map-container {
+            height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            color: var(--dark);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>EcoLoop</h2>
+            <p>Industrial Circular Economy</p>
+        </div>
+        
+        <div class="user-profile">
+            <div class="user-avatar">IU</div>
+            <div class="user-info">
+                <h4>Industrial User</h4>
+                <p>Waste Producer</p>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <h3>Waste Diverted</h3>
+            <p>12.8T</p>
+        </div>
+        
+        <div class="stats-card">
+            <h3>Circular Score</h3>
+            <p>78%</p>
+        </div>
+        
+        <div class="nav-menu">
+            <div class="nav-item active">
+                <i>📊</i> Dashboard
+            </div>
+            <div class="nav-item">
+                <i>🔄</i> My Materials
+            </div>
+            <div class="nav-item">
+                <i>🗺️</i> Marketplace
+            </div>
+            <div class="nav-item">
+                <i>📈</i> Analytics
+            </div>
+            <div class="nav-item">
+                <i>✉️</i> Messages
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="header-bar">
+            <div class="page-title">
+                <h1>Dashboard</h1>
+                <p>Welcome back! Here's your circular economy overview</p>
+            </div>
+            
+            <div class="notification-bell">
+                <span>🔔</span>
+                <div class="notification-badge">5</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Your Active Listings</h3>
+                    <span class="badge">3 Items</span>
+                </div>
+                
+                <div class="material-card">
+                    <div class="material-icon">♻️</div>
+                    <div class="material-info">
+                        <h4>HDPE Pellets</h4>
+                        <p>500kg weekly | 15km radius</p>
+                    </div>
+                    <div class="material-stats">
+                        <div class="match-score">85%</div>
+                        <p>3 matches</p>
+                    </div>
+                </div>
+                
+                <div class="material-card">
+                    <div class="material-icon">⚙️</div>
+                    <div class="material-info">
+                        <h4>Steel Slag</h4>
+                        <p>2 tons monthly | 25km radius</p>
+                    </div>
+                    <div class="material-stats">
+                        <div class="match-score">72%</div>
+                        <p>1 match</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Potential Matches</h3>
+                    <span class="badge">New</span>
+                </div>
+                
+                <div class="material-card">
+                    <div class="material-icon">🏭</div>
+                    <div class="material-info">
+                        <h4>Acme Packaging</h4>
+                        <p>Needs HDPE | 8km away</p>
+                    </div>
+                    <div class="material-stats">
+                        <div class="match-score">92%</div>
+                        <p>2.1T CO2e saved</p>
+                    </div>
+                </div>
+                
+                <div class="material-card">
+                    <div class="material-icon">🏗️</div>
+                    <div class="material-info">
+                        <h4>Urban Foundry</h4>
+                        <p>Needs steel | 18km away</p>
+                    </div>
+                    <div class="material-stats">
+                        <div class="match-score">85%</div>
+                        <p>1.7T CO2e saved</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Your Circularity</h3>
+                </div>
+                <div class="circularity-chart">
+                    [Circular Economy Diagram]
+                </div>
+            </div>
+            
+            <div class="card full-width-card">
+                <div class="card-header">
+                    <h3>Material Flow Map</h3>
+                </div>
+                <div class="map-container">
+                    [Interactive Map Showing Waste Flows]
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

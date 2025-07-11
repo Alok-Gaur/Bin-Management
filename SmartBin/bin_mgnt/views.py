@@ -4,76 +4,109 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Bin, BinRequest, CleanupRequest, Feedback
-from .serializers import (
-    BinSerializer, 
-    BinRequestSerializer, 
-    CleanupRequestSerializer, 
-    FeedbackSerializer
-)
+from .serializers import *
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Bin Views
+
+"""
+API Description of the View
+
+1. bin_list : Get all the bin data or all the bins present in the database, either requested or completed
+2. bin_request_list: Get all the bins requested by the user and their status or Request a new bin
+3. 
+"""
+
+
+
+
+# Get all Bin
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def bin_list(request):
+    """Get all the bins present in the database (established and requested)"""
     bins = Bin.objects.all()
     serializer = BinSerializer(bins, many=True)
     return Response(serializer.data)
 
-# Bin Request Views
-@api_view(['GET', 'POST'])
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def bin_request_status(request):
+    '''Get all the bin request raised by the user'''
+    user = request.user
+    bin_requests = user.bin_requests.all()
+    if bin_requests:
+        serializer = BinRequestSerializer(bin_requests, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({'response': "No request raised!"})
+
+
+# Request a Bin or View all requested Bins
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
-def bin_request_list(request):
-    if request.method == 'GET':
-        requests = BinRequest.objects.filter(user=request.user)
-        serializer = BinRequestSerializer(requests, many=True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        serializer = BinRequestSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def bin_request(request):
+    '''Raise a request for the bin'''
+    serializer = BinRequestSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def bin_request_detail(request, pk):
+    '''Get the details of the specific bin'''
     try:
         bin_request = BinRequest.objects.get(pk=pk, user=request.user)
     except BinRequest.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    if request.method == 'GET':
-        serializer = BinRequestSerializer(bin_request)
-        return Response(serializer.data)
+    serializer = BinRequestSerializer(bin_request)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def cleanup_request_status(request):
+    '''get all the cleanup requests raised'''
+    user = request.user
+    clean_request = user.cleanup_requests.all()
+    if clean_request:
+        serializer = CleanupRequestViewSerializer(clean_request, manay=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+    return Response({'response': "No Request Found!"}, status.HTTP_404_NOT_FOUND)
+
+
 
 # Cleanup Request Views
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
-def cleanup_request_list(request):
-    if request.method == 'GET':
-        requests = CleanupRequest.objects.filter(user=request.user)
-        serializer = CleanupRequestSerializer(requests, many=True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        serializer = CleanupRequestSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def cleanup_request(request, pk):
+    """raise a cleanup request of a specific bin"""  
+    request.data.update({
+        "bin": pk
+    })
+    serializer = CleanupRequestSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def cleanup_request_detail(request, pk):
+    """ Get the details about the request/ request form"""
     try:
         cleanup_request = CleanupRequest.objects.get(pk=pk, user=request.user)
     except CleanupRequest.DoesNotExist:
@@ -83,22 +116,30 @@ def cleanup_request_detail(request, pk):
         serializer = CleanupRequestSerializer(cleanup_request)
         return Response(serializer.data)
 
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def feedback_list(request):
+    feedbacks = Feedback.objects.filter(user=request.user)
+    serializer = FeedbackViewSerializer(feedbacks, many=True)
+    return Response(serializer.data)
+
+
+
 # Feedback Views
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
-def feedback_list(request):
-    if request.method == 'GET':
-        feedbacks = Feedback.objects.filter(user=request.user)
-        serializer = FeedbackSerializer(feedbacks, many=True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        serializer = FeedbackSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def feedback(request):    
+    serializer = FeedbackSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -112,3 +153,8 @@ def feedback_detail(request, pk):
     if request.method == 'GET':
         serializer = FeedbackSerializer(feedback)
         return Response(serializer.data)
+    
+    
+    
+# Here comes the main part
+

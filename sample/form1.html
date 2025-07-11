@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Materials | EcoLoop</title>
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --secondary: #4682B4;
+            --light: #F5F7FA;
+            --dark: #333333;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .progress-bar {
+            margin-bottom: 2rem;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-steps::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ddd;
+            z-index: 1;
+        }
+        
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .step.active .step-number {
+            background-color: var(--primary);
+        }
+        
+        .step.completed .step-number {
+            background-color: var(--primary);
+        }
+        
+        .step-label {
+            font-size: 0.8rem;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+        
+        .step.active .step-label {
+            opacity: 1;
+            font-weight: 600;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .form-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-header h2 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-header p {
+            color: var(--dark);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .offer-request-toggle {
+            display: flex;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        .toggle-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            cursor: pointer;
+            background-color: white;
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-option.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        .ai-suggestion {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .ai-suggestion strong {
+            color: var(--secondary);
+        }
+        
+        .submit-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #247245;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">EcoLoop</div>
+            <div class="user-menu">
+                <span>Welcome, Industrial User</span>
+                <button>Logout</button>
+            </div>
+        </header>
+        
+        <div class="progress-bar">
+            <div class="progress-steps">
+                <div class="step active">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Offer/Request</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-container">
+            <div class="form-header">
+                <h2>List Your Materials</h2>
+                <p>Help create a circular economy by connecting your waste with potential users</p>
+            </div>
+            
+            <div class="offer-request-toggle">
+                <div class="toggle-option active">I Want to Offer Waste</div>
+                <div class="toggle-option">I Need Materials</div>
+            </div>
+            
+            <form>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="material-type">Material Type</label>
+                        <select id="material-type">
+                            <option value="">Select material type</option>
+                            <option value="plastics">Plastics</option>
+                            <option value="metals">Metals</option>
+                            <option value="chemicals">Chemicals</option>
+                            <option value="organics">Organics</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <div style="display: flex;">
+                            <input type="number" id="quantity" placeholder="100">
+                            <select style="width: 100px; margin-left: 0.5rem;">
+                                <option>kg</option>
+                                <option>tons</option>
+                                <option>liters</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="condition">Condition</label>
+                        <select id="condition">
+                            <option value="">Select condition</option>
+                            <option value="new">New</option>
+                            <option value="used">Used</option>
+                            <option value="processed">Processed</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="frequency">Frequency</label>
+                        <select id="frequency">
+                            <option value="">Select frequency</option>
+                            <option value="one-time">One-time</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="description">Additional Description</label>
+                        <input type="text" id="description" placeholder="E.g., Clean HDPE pellets, food-grade">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="Enter address or drag pin on map">
+                        <!-- Map integration would go here -->
+                    </div>
+                </div>
+                
+                <div class="ai-suggestion">
+                    <strong>AI Suggestion:</strong> Similar materials in demand: HDPE pellets (3 buyers within 50km)
+                </div>
+                
+                <button type="submit" class="submit-btn">Find Matches</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

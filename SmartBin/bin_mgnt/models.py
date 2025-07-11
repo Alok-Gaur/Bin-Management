@@ -11,9 +11,12 @@ class Bin(models.Model):
     ]
     
     location = models.CharField(max_length=255)
-    bin_type = models.CharField(max_length=20, choices=BIN_TYPES)
+    bin_type = models.CharField(max_length=20, choices=BIN_TYPES, default='General Waste')
     capacity = models.PositiveIntegerField(default=100)  # percentage
     last_cleaned = models.DateTimeField(null=True, blank=True)
+    installed_date = models.DateTimeField(null=True)
+    request_count = models.IntegerField(null=True, default=0)
+    clean_request_count = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.get_bin_type_display()} Bin at {self.location}"
@@ -64,6 +67,7 @@ class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
     bin_request = models.ForeignKey(BinRequest, on_delete=models.CASCADE, related_name='feedbacks', null=True, blank=True)
     cleanup_request = models.ForeignKey(CleanupRequest, on_delete=models.CASCADE, related_name='feedbacks', null=True, blank=True)
+    bin = models.ForeignKey(Bin, on_delete=models.CASCADE, related_name='feedbacks', null=True, blank=True)
     rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
