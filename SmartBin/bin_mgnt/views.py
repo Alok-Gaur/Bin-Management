@@ -25,17 +25,18 @@ API Description of the View
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
-def bin_list(request):
+def get_all_bin(request):
     """Get all the bins present in the database (established and requested)"""
     bins = Bin.objects.all()
     serializer = BinSerializer(bins, many=True)
     return Response(serializer.data)
 
 
+
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def bin_request_status(request):
+def get_requested_bins(request):
     '''Get all the bin request raised by the user'''
     user = request.user
     bin_requests = user.bin_requests.all()
@@ -43,6 +44,7 @@ def bin_request_status(request):
         serializer = BinRequestSerializer(bin_requests, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response({'response': "No request raised!"})
+
 
 
 # Request a Bin or View all requested Bins
@@ -57,6 +59,9 @@ def bin_request(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+# This is just a prototype. Don't concer yourself to it
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -71,10 +76,11 @@ def bin_request_detail(request, pk):
     return Response(serializer.data)
 
 
+
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def cleanup_request_status(request):
+def get_requested_cleanups(request):
     '''get all the cleanup requests raised'''
     user = request.user
     clean_request = user.cleanup_requests.all()
@@ -85,7 +91,7 @@ def cleanup_request_status(request):
 
 
 
-# Cleanup Request Views
+# Raise Cleanup Request
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -101,7 +107,7 @@ def cleanup_request(request, pk):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+# Don't concern yourself with this function
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -121,15 +127,15 @@ def cleanup_request_detail(request, pk):
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def feedback_list(request):
-    feedbacks = Feedback.objects.filter(user=request.user)
-    serializer = FeedbackViewSerializer(feedbacks, many=True)
+def get_feedbacks(request, id):
+    feedback = Feedback.objects.filter(user=request.user).get(pk=id)
+    serializer = FeedbackViewSerializer(feedback)
     return Response(serializer.data)
 
 
 
 # Feedback Views
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def feedback(request):    
